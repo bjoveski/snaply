@@ -10,15 +10,18 @@ import scala.collection.JavaConverters._
   */
 object Clarifai {
 
+  val APP_ID = sys.env("CLARIFAI_APP_ID")
+  val APP_SECRET = sys.env("CLARIFAI_APP_SECRET")
+
+  lazy val client = new ClarifaiClient(APP_ID, APP_SECRET)
 
   def run() = {
-    val APP_ID = sys.env("CLARIFAI_APP_ID")
-    val APP_SECRET = sys.env("CLARIFAI_APP_SECRET")
 
-    val clarifai = new ClarifaiClient(APP_ID, APP_SECRET)
-    val results = clarifai.recognize(new RecognitionRequest(new File("/Users/bojan/Downloads/gosaikunda.jpg")))
+    val results = client.recognize(new RecognitionRequest(new File("/Users/bojan/Downloads/gosaikunda.jpg")))
+
 
     results.get(0).getTags.asScala.foreach{tag =>
+
       println(tag.getName + ": " + tag.getProbability)
     }
   }
