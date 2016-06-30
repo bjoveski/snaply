@@ -20,21 +20,22 @@ class ImageReader extends Util with Colors {
 
     require(folder.isDirectory, s"$path must be a directory!")
 
-    val files = folder.listFiles().filter{f => f.isFile && f.getName.endsWith(".jpg")}
+    val files = folder.listFiles().filter{f => f.isFile && (f.getName.endsWith(".jpg") || f.getName.endsWith(".png"))}
 
-
-    files.sliding(BATCH_SIZE, BATCH_SIZE).zipWithIndex.map{case (slice, idx) =>
+    files.toSeq.sliding(BATCH_SIZE, BATCH_SIZE).zipWithIndex.toSeq.flatMap{case (slice, idx) =>
       println(f"requesting ${BATCH_SIZE * idx}%4d image.")
-      sendRequest(files)
-    }.flatten.toSeq
+      sendRequest(slice)
+    }
   }
 
 
   def sendRequest(files: Seq[File]): Seq[Image] = {
     val request = new RecognitionRequest(files:_*)
-    val batchResponse = Clarifai.client.recognize(request)
+//    request.setModel("food-items-v0.1")
 
     val (results, ms) = runAndTime {
+      val batchResponse = Clarifai.client.recognize(request)
+
       files.zipWithIndex.map { case (f, idx) =>
         val response = batchResponse.get(idx)
 
