@@ -6,4 +6,8 @@ package bjoveski
  */
 object Main extends App {
   println( "Hello World!" )
+  
+  Clarifai.run()
+
+
 }

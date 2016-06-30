@@ -54,6 +54,20 @@
             <artifactId>joda-time</artifactId>
             <version>2.9.4</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-vision</artifactId>
+            <version>v1-rev17-1.22.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.clarifai</groupId>
+            <artifactId>clarifai-api-java</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
