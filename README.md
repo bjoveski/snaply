@@ -1,19 +1,22 @@
 # snaply
 
 
-## overview
+## Overview
 
-Snaply is a tool that groups similar images together. It uses the [Clarifai](clarifai.com) API to generate the tags, and then the user can browse through their photos based on the tags.
+Snaply is a tool that let's you explore your photo gallery. It groups similar photos together, based on the tags provided by [Clarifai](clarifai.com).
+This tool is just a for-fun project, mostly for exploring the Clarifai possibilities and experimenting with the state-of-the-art swing UI framework.
 
-## requisites
+## Prerequisites
 
 You'll need couple of things before you can use Snaply locally.
 
-You'll need jdk, which you can download [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* jdk, which you can download [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 
-You'll need maven, which you can download [here](https://maven.apache.org/download.cgi)
+* scala, which you can download [here](http://www.scala-lang.org/download/)
 
-You'll need Clarifai app id & secret, which you'll when you create an [account](https://developer.clarifai.com/signup/). Add your id & secret as environmental variables, as Snaply needs them to access the API.
+* maven, which you can download [here](https://maven.apache.org/download.cgi)
+
+* Clarifai app id & secret, which can get when you create an [account](https://developer.clarifai.com/signup/). Add your id & secret as environmental variables, as Snaply needs them to access the API.
 
 ```
 export CLARIFAI_APP_ID=my-id
@@ -22,3 +25,8 @@ export CLARIFAI_APP_SECRET=my-secret
 
 And you should be all set!
 
+## Future work
+
+* add a cache so we don't call the API every time we start the app
+* add a way to choose tags
+* add a way to go back to previous image
