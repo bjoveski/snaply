@@ -7,6 +7,7 @@ import bjoveski.{State, Util}
 import scala.swing.GridBagPanel.Fill
 import scala.swing._
 import scala.swing.event.{ButtonClicked, MouseClicked}
+import scala.util.Random
 
 
 /**
@@ -135,7 +136,7 @@ object Window extends SimpleSwingApplication with Util {
       // reset images
       case ButtonClicked(component) if buttons.contains(component) => {
         val tag = component.text
-        val newImages = state.index(tag)
+        val newImages = Random.shuffle(state.index(tag))
 
         zipOption(imagePanels, newImages).foreach{case (panel, imageOpt) =>
           panel.reset(imageOpt.map(_.f))
