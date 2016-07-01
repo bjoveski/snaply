@@ -24,14 +24,15 @@ class ImagePanel extends Panel {
   }
 
   override def paintComponent(g:Graphics2D) = {
-    bufferedImage.foreach(g.drawImage(_, 0, 0, Window.IMAGE_LENGTH, Window.IMAGE_HEIGHT, null))
+    bufferedImage.foreach(g.drawImage(_, 0, 0, math.max(0, size.width - 10), math.max(0, size.height - 10), null))
   }
 
   override def ignoreRepaint: Boolean = false
 
-  def reset(file: File): Unit = reset(Some(file))
+  def reset(file: File): Unit = resetHelper(Some(file))
+  def reset(): Unit = resetHelper(None)
 
-  def reset(file: Option[File]): Unit = {
+  private def resetHelper(file: Option[File]): Unit = {
     imagePath_=(file)
     repaint()
   }

@@ -6,6 +6,7 @@ import bjoveski.State
 
 import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing._
+import scala.swing.event.ButtonClicked
 
 
 /**
@@ -42,10 +43,10 @@ object Window extends SimpleSwingApplication {
     val tag = button.text
     val images = state.store.getOrElse(tag, Seq()).take(3)
 
-    imagePanels.foreach(_.reset(None))
+    imagePanels.foreach(_.reset())
 
-    images.zip(imagePanels).foreach{case (taggedImage, imagePanel) =>
-      imagePanel.reset(Some(taggedImage.f))
+    imagePanels.zip(images).foreach{case (panel, image) =>
+      panel.reset(image.f)
     }
 
   }
@@ -54,14 +55,12 @@ object Window extends SimpleSwingApplication {
     val c = new Constraints
     val shouldFill = true
     if (shouldFill) {
-      c.fill = Fill.Horizontal
+      c.fill = Fill.Both
     }
 
     // tags
     val button1 = new Button()
-
     c.weightx = 0.33
-
     c.fill = Fill.Horizontal
     c.gridx = 0
     c.gridy = 0
@@ -82,10 +81,11 @@ object Window extends SimpleSwingApplication {
     layout(button3) = c
 
     val mainImage = new ImagePanel { imagePath = None }
-    c.fill = Fill.Horizontal
-    c.ipadx = IMAGE_LENGTH
-    c.ipady = IMAGE_HEIGHT      //make this component tall
-    c.weightx = 0.0
+    c.fill = Fill.Both
+    c.ipadx = 10
+    c.ipady = 10      //make this component tall
+//    c.weightx = 1.0
+    c.weighty = 1.0   //request any extra vertical space
     c.gridwidth = 3    //3 columns wide
     c.gridx = 0
     c.gridy = 1
@@ -93,32 +93,29 @@ object Window extends SimpleSwingApplication {
 
 
     val img1 = new ImagePanel { imagePath = None }
-    c.fill = Fill.Horizontal
+    c.fill = Fill.Both
     c.ipady = 0       //reset to default
-    c.weighty = 1.0   //request any extra vertical space
-    c.anchor = Anchor.PageEnd
-    c.insets = new Insets(10,0,0,0)  //top padding
+    c.weighty = 0.5
+    c.insets = new Insets(4,4,4,4)  //padding
     c.gridx = 0       //aligned with button 2
     c.gridy = 2       //third row
     layout(img1) = c
 
 
     val img2 = new ImagePanel { imagePath = None }
-    c.fill = Fill.Horizontal
+    c.fill = Fill.Both
     c.ipady = 0       //reset to default
-    c.weighty = 1.0   //request any extra vertical space
-    c.anchor = Anchor.PageEnd
-    c.insets = new Insets(10,0,0,0)  //top padding
+    c.weighty = 0.5
+    c.insets = new Insets(4,4,4,4)  //padding
     c.gridx = 1       //aligned with button 2
     c.gridy = 2       //third row
     layout(img2) = c
 
     val img3 = new ImagePanel { imagePath = None }
-    c.fill = Fill.Horizontal
+    c.fill = Fill.Both
     c.ipady = 0       //reset to default
-    c.weighty = 1.0   //request any extra vertical space
-    c.anchor = Anchor.PageEnd
-    c.insets = new Insets(10,0,0,0)  //top padding
+    c.weighty = 0.5
+    c.insets = new Insets(4,4,4,4)  //padding
     c.gridx = 2       //aligned with button 2
     c.gridy = 2       //third row
     layout(img3) = c
@@ -143,11 +140,25 @@ object Window extends SimpleSwingApplication {
 
     buttons.zip(img.annotations).foreach{case (button, tag) => button.text = tag.getName}
 
-//    listenTo(button)
-//    listenTo(img)
+    listenTo(buttons:_*)
+    listenTo(imagePanels:_*)
 
 
+    reactions += {
+      // reset images
+      case ButtonClicked(component) if buttons.contains(component) => {
+        val tag = component.text
+        val newImages = state.store(tag)
 
+        imagePanels.foreach(_.reset())
+
+        imagePanels.zip(newImages).foreach{case (panel, image) =>
+            panel.reset(image.f)
+        }
+        
+        println(s"${component.text} was pressed. updated ${newImages.size} photos")
+      }
+    }
     //    reactions += {
     //      case ButtonClicked(component) if component == button => {
     //        currentDir = getDirectoryListing()
