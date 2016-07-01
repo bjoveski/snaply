@@ -11,7 +11,7 @@ import scala.collection.JavaConverters._
 /**
   * Created by bojan on 6/30/16.
   */
-class ImageReader extends Util with Colors {
+object ImageReader extends Util with Colors {
 
   val BATCH_SIZE = 4
 
