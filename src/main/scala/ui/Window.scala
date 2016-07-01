@@ -76,7 +76,7 @@ object Window extends SimpleSwingApplication with Util {
 
 
     val img1 = new ImagePanel { imagePath = None }
-    c.fill = Fill.Horizontal
+    c.fill = Fill.Both
     c.ipady = 0       //reset to default
     c.gridwidth = 1
     c.weightx = 0.33
@@ -137,7 +137,10 @@ object Window extends SimpleSwingApplication with Util {
       // reset images
       case ButtonClicked(component) if buttons.contains(component) => {
         val tag = component.text
-        val newImages = Random.shuffle(state.index(tag))
+        val newImages = Random.shuffle(
+          state.index(tag)
+            .filterNot(img => grid.mainImage.imagePath.map(_.getAbsolutePath).contains(img.f.getAbsolutePath))
+        )
 
         zipOption(imagePanels, newImages).foreach{case (panel, imageOpt) =>
           panel.reset(imageOpt.map(_.f))
