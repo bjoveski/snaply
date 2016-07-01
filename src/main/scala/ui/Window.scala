@@ -2,7 +2,7 @@ package ui
 
 import java.io.File
 
-import bjoveski.State
+import bjoveski.{State, Util}
 
 import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing._
@@ -13,7 +13,7 @@ import scala.swing.event.ButtonClicked
   * Created by bojan on 6/30/16.
   */
 
-object Window extends SimpleSwingApplication {
+object Window extends SimpleSwingApplication with Util {
 
   val IMAGE_HEIGHT = 600
   val IMAGE_LENGTH = 800
@@ -43,10 +43,10 @@ object Window extends SimpleSwingApplication {
     val tag = button.text
     val images = state.store.getOrElse(tag, Seq()).take(3)
 
-    imagePanels.foreach(_.reset())
+//    imagePanels.foreach(_.reset())
 
-    imagePanels.zip(images).foreach{case (panel, image) =>
-      panel.reset(image.f)
+    zipOption(imagePanels, images).foreach{case (panel, imageOpt) =>
+      panel.reset(imageOpt.map(_.f))
     }
 
   }
@@ -136,7 +136,7 @@ object Window extends SimpleSwingApplication {
     state = currentDir.map(State.apply(_)).getOrElse(state)
 
     val img = state.store.head._2.head
-    grid.mainImage.reset(img.f)
+    grid.mainImage.reset(Some(img.f))
 
     buttons.zip(img.annotations).foreach{case (button, tag) => button.text = tag.getName}
 
@@ -150,13 +150,12 @@ object Window extends SimpleSwingApplication {
         val tag = component.text
         val newImages = state.store(tag)
 
-        imagePanels.foreach(_.reset())
 
-        imagePanels.zip(newImages).foreach{case (panel, image) =>
-            panel.reset(image.f)
+        zipOption(imagePanels, newImages).foreach{case (panel, imageOpt) =>
+          panel.reset(imageOpt.map(_.f))
         }
-        
-        println(s"${component.text} was pressed. updated ${newImages.size} photos")
+
+        println(s"${component.text} was pressed. updated ${newImages.size} photos.")
       }
     }
     //    reactions += {

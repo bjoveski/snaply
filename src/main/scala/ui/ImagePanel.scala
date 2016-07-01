@@ -29,10 +29,10 @@ class ImagePanel extends Panel {
 
   override def ignoreRepaint: Boolean = false
 
-  def reset(file: File): Unit = resetHelper(Some(file))
-  def reset(): Unit = resetHelper(None)
+//  def reset(file: File): Unit = resetHelper(Some(file))
+//  def reset(): Unit = resetHelper(None)
 
-  private def resetHelper(file: Option[File]): Unit = {
+  def reset(file: Option[File]): Unit = {
     imagePath_=(file)
     repaint()
   }
