@@ -4,9 +4,9 @@ import java.io.File
 
 import bjoveski.{State, Util}
 
-import scala.swing.GridBagPanel.{Anchor, Fill}
+import scala.swing.GridBagPanel.Fill
 import scala.swing._
-import scala.swing.event.ButtonClicked
+import scala.swing.event.{ButtonClicked, MouseClicked}
 
 
 /**
@@ -41,9 +41,7 @@ object Window extends SimpleSwingApplication with Util {
 
   def onButtonClick(button: Button) = {
     val tag = button.text
-    val images = state.store.getOrElse(tag, Seq()).take(3)
-
-//    imagePanels.foreach(_.reset())
+    val images = state.index.getOrElse(tag, Seq()).take(3)
 
     zipOption(imagePanels, images).foreach{case (panel, imageOpt) =>
       panel.reset(imageOpt.map(_.f))
@@ -84,7 +82,6 @@ object Window extends SimpleSwingApplication with Util {
     c.fill = Fill.Both
     c.ipadx = 10
     c.ipady = 10      //make this component tall
-//    c.weightx = 1.0
     c.weighty = 1.0   //request any extra vertical space
     c.gridwidth = 3    //3 columns wide
     c.gridx = 0
@@ -135,21 +132,19 @@ object Window extends SimpleSwingApplication with Util {
 
     state = currentDir.map(State.apply(_)).getOrElse(state)
 
-    val img = state.store.head._2.head
+    val img = state.index.head._2.head
     grid.mainImage.reset(Some(img.f))
 
     buttons.zip(img.annotations).foreach{case (button, tag) => button.text = tag.getName}
 
     listenTo(buttons:_*)
-    listenTo(imagePanels:_*)
-
+    listenTo(imagePanels.map(_.mouse.clicks):_*)
 
     reactions += {
       // reset images
       case ButtonClicked(component) if buttons.contains(component) => {
         val tag = component.text
-        val newImages = state.store(tag)
-
+        val newImages = state.index(tag)
 
         zipOption(imagePanels, newImages).foreach{case (panel, imageOpt) =>
           panel.reset(imageOpt.map(_.f))
@@ -157,22 +152,20 @@ object Window extends SimpleSwingApplication with Util {
 
         println(s"${component.text} was pressed. updated ${newImages.size} photos.")
       }
+      // selects a different image
+      case MouseClicked(component: ImagePanel, _, _, _, _)
+        if imagePanels.contains(component) && component.imagePath.isDefined => {
+        println(s"panel ${component.imagePath} was clicked")
+        val image = state.store(component.imagePath.get)
+        // set the mainImage
+        grid.mainImage.reset(component.imagePath)
+        // set the tags
+        buttons.zip(image.annotations).foreach{case (button, tag) => button.text = tag.getName}
+        // reset the panels
+        imagePanels.foreach(_.reset(None))
+      }
     }
-    //    reactions += {
-    //      case ButtonClicked(component) if component == button => {
-    //        currentDir = getDirectoryListing()
-    //        currentImage = currentDir.flatMap(_.listFiles().find{f => f.isFile && (f.getName.endsWith(".jpg") || f.getName.endsWith(".png"))})
-    //        img.reset(currentImage.map(_.getAbsolutePath))
-    //      }
-
-    //      case ButtonClicked(component) if component == toggle =>
-    //        toggle.text = if (toggle.selected) "On" else "Off"
-    //      case MouseClicked(_, point, _, _, _) =>
-    //        //        canvas.throwDart(new Dart(point.x, point.y, Color.black))
-    //        textField.text = (s"You clicked in the Canvas at x=${point.x}, y=${point.y}.")
   }
-
-
 }
 
 
