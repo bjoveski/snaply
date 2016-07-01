@@ -122,7 +122,8 @@ object Window extends SimpleSwingApplication with Util {
     // initialization work
     currentDir = getDirectoryListing()
     state = currentDir.map(State.apply(_)).getOrElse(state)
-    val img = state.index.head._2.head
+    val idx = Random.nextInt(state.store.size)
+    val img = state.store.slice(idx, idx + 1).head._2
 
     grid.mainImage.reset(Some(img.f))
 
