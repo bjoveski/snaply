@@ -14,6 +14,9 @@ import scala.swing._
 
 object Window extends SimpleSwingApplication {
 
+  val IMAGE_HEIGHT = 600
+  val IMAGE_LENGTH = 800
+
   var currentDir: Option[File] = None
 
   var state = State()
@@ -80,8 +83,8 @@ object Window extends SimpleSwingApplication {
 
     val mainImage = new ImagePanel { imagePath = None }
     c.fill = Fill.Horizontal
-    c.ipadx = 800
-    c.ipady = 600      //make this component tall
+    c.ipadx = IMAGE_LENGTH
+    c.ipady = IMAGE_HEIGHT      //make this component tall
     c.weightx = 0.0
     c.gridwidth = 3    //3 columns wide
     c.gridx = 0
