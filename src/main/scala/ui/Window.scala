@@ -15,14 +15,9 @@ import scala.swing.event.{ButtonClicked, MouseClicked}
 
 object Window extends SimpleSwingApplication with Util {
 
-  val IMAGE_HEIGHT = 600
-  val IMAGE_LENGTH = 800
-
   var currentDir: Option[File] = None
 
   var state = State()
-
-  //  var currentImage: Option[Image] = None
 
   def getDirectoryListing(): Option[File] = {
     val chooser = new FileChooser(null)
@@ -38,16 +33,6 @@ object Window extends SimpleSwingApplication with Util {
 
   def buttons = Seq(grid.button1, grid.button2, grid.button3)
   def imagePanels = Seq(grid.img1, grid.img2, grid.img3)
-
-  def onButtonClick(button: Button) = {
-    val tag = button.text
-    val images = state.index.getOrElse(tag, Seq()).take(3)
-
-    zipOption(imagePanels, images).foreach{case (panel, imageOpt) =>
-      panel.reset(imageOpt.map(_.f))
-    }
-
-  }
 
   val grid = new GridBagPanel {
     val c = new Constraints
@@ -90,11 +75,13 @@ object Window extends SimpleSwingApplication with Util {
 
 
     val img1 = new ImagePanel { imagePath = None }
-    c.fill = Fill.Both
+    c.fill = Fill.Horizontal
     c.ipady = 0       //reset to default
+    c.gridwidth = 1
+    c.weightx = 0.33
     c.weighty = 0.5
     c.insets = new Insets(4,4,4,4)  //padding
-    c.gridx = 0       //aligned with button 2
+    c.gridx = 0
     c.gridy = 2       //third row
     layout(img1) = c
 
@@ -102,18 +89,22 @@ object Window extends SimpleSwingApplication with Util {
     val img2 = new ImagePanel { imagePath = None }
     c.fill = Fill.Both
     c.ipady = 0       //reset to default
+    c.gridwidth = 1
+    c.weightx = 0.33
     c.weighty = 0.5
     c.insets = new Insets(4,4,4,4)  //padding
-    c.gridx = 1       //aligned with button 2
+    c.gridx = 1
     c.gridy = 2       //third row
     layout(img2) = c
 
     val img3 = new ImagePanel { imagePath = None }
     c.fill = Fill.Both
     c.ipady = 0       //reset to default
+    c.gridwidth = 1
+    c.weightx = 0.33
     c.weighty = 0.5
     c.insets = new Insets(4,4,4,4)  //padding
-    c.gridx = 2       //aligned with button 2
+    c.gridx = 2
     c.gridy = 2       //third row
     layout(img3) = c
   }
@@ -123,19 +114,19 @@ object Window extends SimpleSwingApplication with Util {
 
     title = "Snaply"
 
+    preferredSize = new Dimension(800, 600)
+
     contents = grid
 
-    listenTo(buttons:_*)
-    listenTo(imagePanels:_*)
-
+    // initialization work
     currentDir = getDirectoryListing()
-
     state = currentDir.map(State.apply(_)).getOrElse(state)
-
     val img = state.index.head._2.head
+
     grid.mainImage.reset(Some(img.f))
 
     buttons.zip(img.annotations).foreach{case (button, tag) => button.text = tag.getName}
+
 
     listenTo(buttons:_*)
     listenTo(imagePanels.map(_.mouse.clicks):_*)
@@ -150,6 +141,7 @@ object Window extends SimpleSwingApplication with Util {
           panel.reset(imageOpt.map(_.f))
         }
 
+        grid.repaint()
         println(s"${component.text} was pressed. updated ${newImages.size} photos.")
       }
       // selects a different image
@@ -163,6 +155,7 @@ object Window extends SimpleSwingApplication with Util {
         buttons.zip(image.annotations).foreach{case (button, tag) => button.text = tag.getName}
         // reset the panels
         imagePanels.foreach(_.reset(None))
+        grid.repaint()
       }
     }
   }

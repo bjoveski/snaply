@@ -17,8 +17,7 @@ class ImagePanel extends Panel {
 
   def imagePath = _imageFile
 
-  def imagePath_=(value: Option[File])
-  {
+  def imagePath_=(value: Option[File]) {
     _imageFile = value
     bufferedImage = _imageFile.map(file => ImageIO.read(file))
   }
